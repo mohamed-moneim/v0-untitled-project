@@ -339,6 +339,29 @@ void logSystemState() {
     fflush(log_file);
 }
 
+// Function to display the currently running process
+void displayRunningProcess() {
+    static int last_display_time = -1;
+    
+    // Only display once per second
+    if (shm_clock->current_time == last_display_time) {
+        return;
+    }
+    
+    last_display_time = shm_clock->current_time;
+    
+    printf("\n===== Time: %d =====\n", shm_clock->current_time);
+    if (running_process != NULL) {
+        printf("Running Process: ID=%d, Priority=%d, Remaining Time=%d\n", 
+               running_process->id, 
+               running_process->priority,
+               running_process->remaining_time);
+    } else {
+        printf("No process running (CPU idle)\n");
+    }
+    printf("===================\n");
+}
+
 // Function to schedule processes based on algorithm
 void scheduleProcess() {
     updateWaitingTimes();
@@ -477,6 +500,8 @@ int main(int argc, char *argv[]) {
     while (1) {
         // Log system state every second
         logSystemState();
+        
+        displayRunningProcess();
         
         // Check for messages
         if (msgrcv(msgq_id, &msg, sizeof(msg.process), 0, IPC_NOWAIT) != -1) {
