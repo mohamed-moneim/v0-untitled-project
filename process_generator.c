@@ -15,7 +15,7 @@ void readProcessFile(const char* filename) {
     }
 
     char line[100];
-    PCB process;
+    Process process;
     Message msg;
 
     // Skip comment lines
@@ -26,13 +26,15 @@ void readProcessFile(const char* filename) {
         if (sscanf(line, "%d\t%d\t%d\t%d", &process.id, &process.arrival_time, 
                    &process.runtime, &process.priority) == 4) {
             
-            // Initialize PCB fields
+            // Initialize Process fields
             process.remaining_time = process.runtime;
             process.waiting_time = 0;
             process.state = READY;
             process.start_time = -1;
             process.finish_time = -1;
             process.last_run_time = -1;
+            process.prempted = false;
+            process.memsize = 0; // Not used in this implementation
             
             // Wait until the process arrival time
             while (shm_clock->current_time < process.arrival_time) {
