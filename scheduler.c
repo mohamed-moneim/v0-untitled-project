@@ -128,7 +128,7 @@ void processTermination(int pid) {
     // Log process termination
     logProcess(process, "finished");
     
-    printf("Process %d finished at time %d\n", process->id, shm_clock->current_time);
+    printf("\n--> Process %d finished at time %d <--\n", process->id, shm_clock->current_time);
     
     // If this was the running process, set running_process to NULL
     if (running_process == process) {
@@ -525,6 +525,24 @@ int main(int argc, char *argv[]) {
         }
         
         if (all_finished && process_count > 0) {
+            // Find the last process to finish
+            int last_finish_time = 0;
+            int last_process_id = -1;
+            
+            for (int i = 0; i < process_count; i++) {
+                if (process_table[i].finish_time > last_finish_time) {
+                    last_finish_time = process_table[i].finish_time;
+                    last_process_id = process_table[i].id;
+                }
+            }
+            
+            printf("\n========================================\n");
+            printf("ALL PROCESSES COMPLETED\n");
+            printf("Last process (ID=%d) finished at time %d\n", 
+                   last_process_id, last_finish_time);
+            printf("Total execution time: %d seconds\n", last_finish_time);
+            printf("========================================\n\n");
+            
             break;
         }
         
